@@ -2,14 +2,28 @@ package guru.springframework.sfgdi.config;
 
 import com.springframework.pets.PetService;
 import com.springframework.pets.PetServiceFactory;
+import guru.springframework.sfgdi.datasource.FakeDatasource;
 import guru.springframework.sfgdi.repositories.EnglishGreetingRepository;
 import guru.springframework.sfgdi.repositories.EnglishGreetingRepositoryImpl;
 import guru.springframework.sfgdi.services.*;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
+@PropertySource("classpath:datasource.properties") // properties for configuration can be added like this. All properties will be pushed to the context
 @ImportResource("classpath:sfgdi-config.xml") // we can import the xml configuration in java // really cool but not good for practice use
 @Configuration
 public class GreetingServiceConfig {
+
+    @Bean
+    FakeDatasource fakeDatasource(@Value("${guru.username}") String username, // by @Value notation we can pull data to our values from the context
+                                  @Value("${guru.password}") String password,
+                                  @Value("${guru.jdbcUrl}") String jdbcUrl){
+        FakeDatasource fakeDatasource = new FakeDatasource();
+        fakeDatasource.setUsername(username);
+        fakeDatasource.setPassword(password);
+        fakeDatasource.setJdbc(jdbcUrl);
+        return fakeDatasource;
+    }
 
     @Bean
     PetServiceFactory petServiceFactory(){
